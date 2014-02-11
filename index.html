@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+	<style type="text/css">
+		/* Prevent copy paste for all elements except text fields */
+		*  { -webkit-user-select:none; -webkit-tap-highlight-color:rgba(255, 255, 255, 0); }
+		input, textarea  { -webkit-user-select:text; }
+		body { background-color:white; color:black }
+	</style>
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map-canvas { height: 100% }
+    </style>
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyALF6v195r1T-Vmxa_0_RknOH3Ylx01kAc&sensor=false">
+    </script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.0.1.min.js"></script>
+    <script type="text/javascript">
+		/* This code is used to run as soon as Intel activates */
+		var onDeviceReady=function(){
+		//hide splash screen
+		intel.xdk.device.hideSplashScreen();
+		};
+		document.addEventListener("intel.xdk.device.ready",onDeviceReady,false);
+	</script>
+    <script type="text/javascript">
+      var map;
+      var stage;
+      function updateImage () {
+        $('#map-canvas').hide();
+        $('#container').show();
+        $('#container').addClass('col-md-9');
+	      stage = new Kinetic.Stage({
+          container: "container",
+          width: 960,
+          height: 655
+	      });
+
+	      mapFunction();
+      }
+      function drawImage(imageObj, hInt, wInt) { 
+        
+        var layer = new Kinetic.Layer();
+
+        // all vehicles
+        var defaultImg = new Kinetic.Image({
+          image: imageObj,
+          x: 100,
+          y: 30,
+          width: wInt,
+          height: hInt,
+          draggable: true
+        });
+        
+        
+
+        // add cursor styling
+        defaultImg.on('mouseover', function() {
+          document.body.style.cursor = 'pointer';
+        });
+        defaultImg.on('mouseout', function() {
+          document.body.style.cursor = 'default';
+        });
+        
+        hold = defaultImg;
+
+        layer.add(defaultImg);
+        stage.add(layer);
+        
+        var angularSpeed = 360 / 8;
+        var anim = new Kinetic.Animation(function(frame) {
+          var angleDiff = frame.timeDiff * angularSpeed / 1000;
+          defaultImg.rotate(angleDiff);
+        }, layer);
+        
+        var check = true;
+        
+        defaultImg.on('click', function() {
+            if(check == true) {
+                anim.start();
+                check = false;
+            } else {
+                anim.stop();
+                check = true;
+            }  
+        });
+        
+        defaultImg.on('dblclick', function() {
+            layer.remove(defaultImg);
+        });
+
+      };
+       function drawRoad (imageObj) {
+        var layer = new Kinetic.Layer();
+
+        // for signs need to be smaller
+        var defaultImg = new Kinetic.Image({
+          image: imageObj,
+          x: 0,
+          y: 0,
+          width: 960,
+          height: 655,
+          draggable: false
+        });
+
+        layer.add(defaultImg);
+        stage.add(layer);
+      }
+      function drawSigns(imageObj) { 
+        
+        var layer = new Kinetic.Layer();
+
+        // for signs need to be smaller
+        var defaultImg = new Kinetic.Image({
+          image: imageObj,
+          x: 100,
+          y: 30,
+          width: 40,
+          height: 80,
+          draggable: true
+        });
+        
+        
+
+        // add cursor styling
+        defaultImg.on('mouseover', function() {
+          document.body.style.cursor = 'pointer';
+        });
+        defaultImg.on('mouseout', function() {
+          document.body.style.cursor = 'default';
+        });
+        
+
+        layer.add(defaultImg);
+        stage.add(layer);
+        
+        var angularSpeed = 360 / 16;
+        var anim = new Kinetic.Animation(function(frame) {
+          var angleDiff = frame.timeDiff * angularSpeed / 1000;
+          defaultImg.rotate(angleDiff);
+        }, layer);
+        
+        var check = true;
+        
+        defaultImg.on('click', function() {
+            if(check == true) {
+                anim.start();
+                check = false;
+            } else {
+                anim.stop();
+                check = true;
+            }  
+        });
+        
+        defaultImg.on('dblclick', function() {
+            layer.remove(defaultImg);
+        });
+        
+      };
+      function mapFunction() {
+        var mapObj = new Image();
+      mapObj.onload = function() {
+        drawRoad(mapObj);
+      };
+      var baseURL = "http://api.tiles.mapbox.com/v3/lenell16.h7lfk2p5/";
+        var size = "" + "950" + "x" + "655" + ".png";
+        var zoom = "," + map.getZoom() + "/";
+        var center = "" + map.getCenter().lng() + "," + map.getCenter().lat();
+        var imgURL = baseURL + center + zoom + size;
+      mapObj.src = imgURL;
+      };
+      function carFunction() {
+        var carObj = new Image();
+      carObj.onload = function() {
+        drawImage(carObj,12,24);
+      };
+      carObj.src = "car.png";
+      };
+      function impactFunction() {
+        var impactObj = new Image();
+      impactObj.onload = function() {
+        drawImage(impactObj,40,40);
+      };
+      impactObj.src = "impact.png";
+      };
+
+      function motorFunction() {
+        var motorObj = new Image();
+      motorObj.onload = function() {
+        drawImage(motorObj,20,30);
+      };
+      motorObj.src = "motor.png";
+      };
+      function busFunction() {
+        var busObj = new Image();
+        busObj.onload = function() {
+            drawImage(busObj,60,80);
+        };
+        busObj.src = "bus.png";
+      };
+      
+      function truckFunction() {
+        var truckObj = new Image();
+        truckObj.onload = function() {
+            drawImage(truckObj,60,80);
+        };
+        truckObj.src = "truck.png";
+      };
+      
+      function tTrailerFunction() {
+        var trailerObj = new Image();
+        trailerObj.onload = function() {
+            drawImage(trailerObj,60,80);
+        };
+        trailerObj.src = "trailer.png";
+      };
+      
+      function vanFunction() {
+        var vanObj = new Image();
+        vanObj.onload = function() {
+            drawImage(vanObj,60,80);
+        };
+        vanObj.src = "van.png";
+      };
+      
+      function stopFunction() {
+        var stopObj = new Image();
+        stopObj.onload = function() {
+            drawSigns(stopObj);
+        };
+        stopObj.src = "stop.png";
+      };
+
+      function makeLabel () {
+     		var labelText = $('#labeltextbox').val();
+      	var layer = new Kinetic.Layer({
+      		draggable: true
+      	});
+      	var simpleText = new Kinetic.Text({
+        x: stage.width() / 2 + 1,
+        y: 15,
+        text: labelText,
+        fontSize: 16,
+        fontFamily: 'Calibri',
+        fill: 'black'
+      });
+      	var box = new Kinetic.Rect({
+        x: stage.width() / 2 - 1.5,
+        y: 11.5,
+        width: simpleText.width()+6,
+        height: simpleText.height()+8,
+        fill: 'red',
+        stroke: 'black',
+        strokeWidth: 2
+      });
+      	layer.add(box);
+      	layer.add(simpleText);
+        stage.add(layer);
+
+        box.on('dblclick', function() {
+            layer.remove(simpleText);
+            layer.remove(box);
+            
+        });
+
+        sampleText.on('dblclick', function() {
+            layer.remove(simpleText);
+            layer.remove(box);
+            
+        });
+      }
+
+      
+      function initialize() {
+        var mapOptions = {
+          center: new google.maps.LatLng(40.4419, -86.9125),
+          zoom: 17,
+          maxZoom: 19,
+          mapTypeId: google.maps.MapTypeId.HYBRID,
+          tilt: 0
+        };
+
+        map = new google.maps.Map(document.getElementById("map-canvas"),
+            mapOptions);
+        var acOptions = {
+        };
+        var autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'),acOptions);
+        autocomplete.bindTo('bounds',map);
+
+        google.maps.event.addListener(autocomplete, 'place_changed', function() {
+        	
+          var place = autocomplete.getPlace();
+          
+          map.setCenter(place.geometry.location);
+          $('#container').hide();
+          $('#map-canvas').show();
+          
+        });
+       
+      }
+      function loadScript() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&' +
+            'callback=initialize';
+        document.body.appendChild(script);
+      }
+
+      window.onload = loadScript;
+      google.maps.event.addDomListener(window, 'load', initialize);
+      function test () {
+      	// body...
+      	stage.toDataURL({
+          callback: function(dataUrl) {
+            /*
+             * here you can do anything you like with the data url.
+             * In this tutorial we'll just open the url with the browser
+             * so that you can see the result as an image
+             */
+            window.open(dataUrl);
+          }
+        });
+      }
+      
+    </script>
+    <style type="text/css" media="screen">
+      .col-md-9 {
+        padding:0 0 0 0;
+      }
+      .my-sidebar {
+      	margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="navbar navbar-fixed-top navbar-inverse">
+      <div class="navbar-inner">
+        <div class="container">
+          <a href="index.html" id="logo">Mahogany</a>
+          <nav>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a id="save">Snapshot</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+    <div class="col-md-3 my-sidebar">
+      	<div>
+          <label for="autocomplete">Street Name</label>
+          <input type="text" class="form-control" id="autocomplete" placeholder="Enter Street Name">
+        
+        <a onclick="updateImage()" class="btn btn-default" style="margin: 5px 5px 5px 5px;">Create Editable Map</a>
+        </div>
+          
+          <div>
+          <label ></label>
+            <button onclick="carFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Car </button>
+        <button onclick="busFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Bus </button>
+        <button onclick="truckFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Truck </button>
+        <button onclick="tTrailerFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Semi-Truck </button>
+        <button onclick="vanFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Van </button>
+        <button onclick="motorFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Motorcycle</button>
+        <button onclick="impactFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;">Impact</button>
+        <button onclick="stopFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Stop sign </button>
+        </div>
+        <div>
+        <label >Label</label>
+        <input type="text" class="form-control" id="labeltextbox" placeholder="label">
+        <a onclick="makeLabel()" class="btn btn-default" style="margin: 5px 5px 5px 5px;">Make Label</a>
+        </div>
+        <div>
+        <label >Accident Report</label>
+        <textarea class="form-control" rows="8"></textarea>
+        </div>
+          
+     
+    </div>
+    <div class="col-md-9" id="map-canvas"></div>
+    <div id="container"></div>
+    
+  </body>
+</html>
