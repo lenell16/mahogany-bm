@@ -13,7 +13,8 @@
     <style type="text/css">
       html { height: 100% }
       body { height: 100%; margin: 0; padding: 0 }
-      #map-canvas { height: 100% }
+      #map-canvas { height: 100%; position: fixed;}
+      #sidebar { overflow-y: scroll;}
     </style>
     <link rel="stylesheet" href="css/custom.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -352,7 +353,9 @@
         </div>
       </div>
     </header>
-    <div class="col-md-3 my-sidebar">
+   <div class="col-md-3 my-sidebar" id="sidebar">
+      <p><b>Directions:</b> <br>
+         1) Write in a Street name then click "Create Editable Map" when at desired location</p> 
       	<div>
           <label for="autocomplete">Street Name</label>
           <input type="text" class="form-control" id="autocomplete" placeholder="Enter Street Name">
@@ -362,6 +365,7 @@
           
           <div>
           <label ></label>
+          <p> 2) Use buttons below that were in the accident (one-click rotate, two clicks delete) </p>
             <button onclick="carFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Car </button>
         <button onclick="busFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Bus </button>
         <button onclick="truckFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Truck </button>
@@ -372,6 +376,7 @@
         <button onclick="stopFunction()" class="btn btn-default" style="margin: 5px 5px 5px 5px;"> Stop sign </button>
         </div>
         <div>
+          <p>3) Make labels to provide accurate description of vehicle (i.e 97 Camery)<br>
         <label >Label</label>
         <input type="text" class="form-control" id="labeltextbox" placeholder="label">
         <a onclick="makeLabel()" class="btn btn-default" style="margin: 5px 5px 5px 5px;">Make Label</a>
@@ -382,7 +387,7 @@
         </div>
           
      
-    </div>
+    </div> 
     <div class="col-md-9" id="map-canvas"></div>
     <div id="container"></div>
     
